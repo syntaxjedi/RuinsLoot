@@ -13,9 +13,9 @@ Commands
 
 Coming Soon
 ------
-* Adding support for custom named chests
+* ~~Adding support for custom named chests~~
+* ~~Fix duplication bug~~
 * Cleaning the config file to support plain text
 * Adding support to edit chests from in-game
 * Adding economy support to give money in chests
 * Make chests unbreakable
-* Fix duplication bug
