@@ -97,28 +97,24 @@ public class RuinsLoot extends JavaPlugin implements Listener {
 	public boolean onCommand(CommandSender sender, Command command, String label, String args[]){
 		
 		Player p = (Player) sender;
-		if(command.getLabel().equalsIgnoreCase("lootchest") && sender == p){
+		if(command.getLabel().equalsIgnoreCase("lootchest")){
 			
-
 			if(args.length > 0 && args.length < 2){
 				if(args[0].equalsIgnoreCase("common") || args[0].equalsIgnoreCase("uncommon") || args[0].equalsIgnoreCase("legendary")){
-					
 					int emptySlot = p.getInventory().firstEmpty();
 					String cap = args[0].substring(0, 1).toUpperCase() + args[0].substring(1).toLowerCase();
 					String low = args[0].toLowerCase();
 					p.getInventory().setItem(emptySlot, createItem(Material.CHEST, 1, cap + " LootChest", low));
 					p.sendMessage(ChatColor.GOLD + "Gave " + ChatColor.WHITE + cap + " LootChest " + ChatColor.GOLD + "to " + p.getDisplayName());
 					return true;
-				}else if(args[0].equalsIgnoreCase("fill")){
-					p.sendMessage(ChatColor.GOLD + "Filling Chests");
-					waitRef = true;
-					findChest();
-					return true;
 				}
-				else{
-					p.sendMessage(ChatColor.RED + "You must append the proper arguments.");
-					return false;
-				}
+			}else if(args.length > 0 && args.length < 2 && args[0].equalsIgnoreCase("fill")){
+				
+				p.sendMessage(ChatColor.GOLD + "Filling Chests");
+				waitRef = true;
+				findChest();
+				return true;
+				
 			}else if(args.length > 1 && args.length < 3 && args[0].equalsIgnoreCase("common") || args[0].equalsIgnoreCase("uncommon") || args[0].equalsIgnoreCase("legendary")){
 				
 				int emptySlot = p.getInventory().firstEmpty();
@@ -126,21 +122,37 @@ public class RuinsLoot extends JavaPlugin implements Listener {
 				p.getInventory().setItem(emptySlot, createItem(Material.CHEST, 1, args[1], low));
 				p.sendMessage(ChatColor.GOLD + "Gave " + ChatColor.WHITE + low +" LootChest " + ChatColor.GOLD + "to " + p.getDisplayName());
 				return true;
+				
+			}else if(args.length > 0 && args.length < 3 && !args[0].equalsIgnoreCase("common") || !args[0].equalsIgnoreCase("uncommon") || !args[0].equalsIgnoreCase("legendary")){
+				
+				p.sendMessage(ChatColor.RED + "Invalid chest type.");
+				return false;
+				
+			}else if(args.length > 3){
+				
+				p.sendMessage(ChatColor.RED + "Too many arguments.");
+				return false;
+				
+			}else if(args.equals(null)){
+				
+				p.sendMessage(ChatColor.BLUE + "============================================" + 
+						ChatColor.GOLD + "\nCurrent Version: " + ChatColor.LIGHT_PURPLE + getDescription().getVersion() + ChatColor.GOLD + "\nAuthor: " 
+						+ ChatColor.GREEN + getDescription().getAuthors() + ChatColor.GOLD + "\nCommands:" +
+						"\n- /lootchest <common | uncommon | legendary> :" + ChatColor.WHITE + " Gives a lootchest of the type common, uncommon, or legendary" +
+						ChatColor.GOLD + "\n- /lootchest <common | uncommon | legendary> [name] :" + ChatColor.WHITE + " Gives a lootchest of the type common, uncommon, or legendary, with a custom name" 
+						+ ChatColor.RED + " (not yet fillable)" + 
+						ChatColor.GOLD + "\n- /lootchest fill :" + ChatColor.WHITE + " Fills all lootchests with their respective items from the config.");
+					return true;
 			}
-			if(args.length > 3){
-				p.sendMessage(ChatColor.RED + "Too many arguments");
+			else{
+				p.sendMessage(ChatColor.RED + "You must append the proper arguments");
+				return false;
 			}
-			p.sendMessage(ChatColor.BLUE + "============================================" + 
-			ChatColor.GOLD + "\nCurrent Version: " + ChatColor.LIGHT_PURPLE + getDescription().getVersion() + ChatColor.GOLD + "\nAuthor: " + ChatColor.GREEN + getDescription().getAuthors() + ChatColor.GOLD + "\nCommands:" +
-			"\n- /lootchest <common | uncommon | legendary> :" + ChatColor.WHITE + " Gives a lootchest of the type common, uncommon, or legendary" +
-			ChatColor.GOLD + "\n- /lootchest <common | uncommon | legendary> [name] :" + ChatColor.WHITE + " Gives a lootchest of the type common, uncommon, or legendary, with a custom name" 
-			+ ChatColor.RED + " (not yet fillable)" + 
-			ChatColor.GOLD + "\n- /lootchest fill :" + ChatColor.WHITE + " Fills all lootchests with their respective items from the config.");
-			return true;
 		}
 		else{
 			return false;
 		}
+		return false;
 	}
 	
 	@EventHandler
