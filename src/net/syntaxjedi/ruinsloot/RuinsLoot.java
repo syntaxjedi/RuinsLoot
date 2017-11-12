@@ -146,7 +146,8 @@ public class RuinsLoot extends JavaPlugin {
 			p.sendMessage(ChatColor.BLUE + "============================================" + 
 			ChatColor.GOLD + "\nCurrent Version: " + ChatColor.LIGHT_PURPLE + getDescription().getVersion() + ChatColor.GOLD + "\nAuthor: " + ChatColor.GREEN + getDescription().getAuthors() + ChatColor.GOLD + "\nCommands:" +
 			"\n- /lootchest <common | uncommon | legendary> :" + ChatColor.WHITE + " Gives a lootchest of the type common, uncommon, or legendary" +
-			ChatColor.GOLD + "\n- /lootchest <common | uncommon | legendary> [name] :" + ChatColor.WHITE + " Gives a lootchest of the type common, uncommon, or legendary, with a custom name" + 
+			ChatColor.GOLD + "\n- /lootchest <common | uncommon | legendary> [name] :" + ChatColor.WHITE + " Gives a lootchest of the type common, uncommon, or legendary, with a custom name" 
+			+ ChatColor.RED + " (not yet fillable)" + 
 			ChatColor.GOLD + "\n- /lootchest fill :" + ChatColor.WHITE + " Fills all lootchests with their respective items from the config.");
 			return true;
 		}
@@ -164,14 +165,12 @@ public class RuinsLoot extends JavaPlugin {
 					inv = ((Chest) b).getBlockInventory();
 					if(inv.getName().equalsIgnoreCase("common lootchest")){
 						inv.clear();
-						log.info("Inv Size" + inv.getSize());
 						ItemStack[] stacks = getLoot("common");
 						for(int i = 0; i < stacks.length; i++){
 							inv.setItem(i, stacks[i]);
 						}
 					}
 					else if(inv.getName().equalsIgnoreCase("uncommon lootchest")){
-						log.info("Inv Size Uncommon" + inv.getSize());
 						inv.clear();
 						ItemStack[] stacks = getLoot("uncommon");
 						for(int i = 0; i < stacks.length; i++){
@@ -179,7 +178,6 @@ public class RuinsLoot extends JavaPlugin {
 						}
 					}
 					else if(inv.getName().equalsIgnoreCase("legendary lootchest")){
-						log.info("Inv Size Legendary" + inv.getSize());
 						inv.clear();
 						ItemStack[] stacks = getLoot("legendary");
 						for(int i = 0; i < stacks.length; i++){
@@ -195,8 +193,6 @@ public class RuinsLoot extends JavaPlugin {
 	public ItemStack[] getLoot(String chest){
 		ArrayList<?> stack = (ArrayList<?>) this.getConfig().getList("chests." + chest);
 		ItemStack[] stacks = stack.toArray(new ItemStack[stack.size()]);
-		log.info("Size: " + stack.size());
-		log.info("Array: " + stacks.length);
 		return stacks;
 	}
 	
