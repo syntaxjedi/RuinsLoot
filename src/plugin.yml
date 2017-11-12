@@ -1,0 +1,11 @@
+main: net.syntaxjedi.ruinsloot.RuinsLoot
+name: RuinsLoot
+version: 0.1
+author: SyntaxJedi
+description: Refresh all the loot!
+commands:
+  lootchest:
+    description: Spawn a lootchest
+    usage: /lootchest <type> [name]
+    permission: ruinsloot.chest
+    permission-message: You don't have permission to run this command.

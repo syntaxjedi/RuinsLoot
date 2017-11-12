@@ -1,0 +1,40 @@
+#------------------------------------------------------------#
+# 20 ticks/second 20 ticks * 60 seconds = 1200 ticks/minute #
+# default 6000 ticks (5 minutes)                            #
+#                                                           #
+# Copy from '- ==: org.bukkit...' to 'type: ITEM' to make   #
+# a new item, setting an entry to only '- null' denotes an  #
+# empty slot in the chest                                   #
+#------------------------------------------------------------#
+time:
+  ticks: 6000
+chests:
+  common:
+  - ==: org.bukkit.inventory.ItemStack
+    type: IRON_INGOT
+  - ==: org.bukkit.inventory.ItemStack
+    type: IRON_SWORD
+  - ==: org.bukkit.inventory.ItemStack
+    type: IRON_PICKAXE
+  - ==: org.bukkit.inventory.ItemStack
+    type: IRON_INGOT
+  uncommon:
+  - ==: org.bukkit.inventory.ItemStack
+    type: DIAMOND
+  - ==: org.bukkit.inventory.ItemStack
+    type: DIAMOND_SWORD
+  - ==: org.bukkit.inventory.ItemStack
+    type: DIAMOND_PICKAXE
+  - ==: org.bukkit.inventory.ItemStack
+    type: DIAMOND
+  legendary:
+  - ==: org.bukkit.inventory.ItemStack
+    type: IRON_BLOCK
+  - ==: org.bukkit.inventory.ItemStack
+    type: DIAMOND_BLOCK
+  - ==: org.bukkit.inventory.ItemStack
+    type: EMERALD_BLOCK
+  - ==: org.bukkit.inventory.ItemStack
+    type: DIAMOND_BLOCK
+  - ==: org.bukkit.inventory.ItemStack
+    type: IRON_BLOCK
