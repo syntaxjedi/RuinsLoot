@@ -1,46 +1,23 @@
 package net.syntaxjedi.ruinsloot;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Directional;
-import org.bukkit.material.MaterialData;
 import org.bukkit.block.Chest;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -52,6 +29,8 @@ public class RuinsLoot extends JavaPlugin{
 	public int chestNumber;
 	public int time;
 	public Long timel;
+	public int spawnTime;
+	public Long spawnTimeL;
 	public static boolean waitRef = true;
 	@Override
 	public void onEnable(){
@@ -63,12 +42,17 @@ public class RuinsLoot extends JavaPlugin{
 		Commands commands = new Commands(this);
 		this.getCommand("lootchest").setExecutor(commands);
 		log.info("[RuinsLoot] Commands Registered, Checking Plugin Files");
+		this.saveDefaultConfig();
 		FileHandler.createFile();
 		log.info("[RuinsLoot] File Check Successful");
 		
 		
 		time = getConfig().getInt("time.ticks");
 		timel = (long)time;
+		
+		spawnTime = getConfig().getInt("random.ticks");
+		spawnTimeL = (long)spawnTimeL;
+		
 		 BukkitScheduler scheduler = getServer().getScheduler();
 	        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
 	            @Override
@@ -81,7 +65,6 @@ public class RuinsLoot extends JavaPlugin{
 	
 	@Override
 	public void onDisable(){
-		saveConfig();
 	}
 	
 	@EventHandler
@@ -92,34 +75,32 @@ public class RuinsLoot extends JavaPlugin{
 	}
 	
 	public void findChest(){
-		log.info("Filling Chests");
+		log.info("[RuinsLootXL] Filling Chests");
 		World world = Bukkit.getWorld("world");
-		if(waitRef){
-			for(Chunk c : world.getLoadedChunks()){
-				for(BlockState b : c.getTileEntities()){
-					if(b instanceof Chest){
-						inv = ((Chest) b).getBlockInventory();
-						String type = FileHandler.getLoc(b.getX(), b.getY(), b.getZ(), b.getWorld().getName());
-						if(type.equals("common") || type.equals("uncommon") || type.equals("legendary")){
-							inv.clear();
-							ItemStack[] stacks = getLoot(FileHandler.getLoc(b.getX(), b.getY(), b.getZ(), b.getWorld().getName()));
-							for(int ic = 0; ic < stacks.length; ic++){
-								inv.setItem(ic, stacks[ic]);
-							}
-						}
-					}
-					else{
-						continue;
-					}
-				}
+		Map<Integer, ArrayList<Object>> cLoc = FileHandler.getLoc();
+		Location loc = new Location(world, 0, 0, 0);
+		
+		for (int i = 0; i < cLoc.size(); i++){
+			loc.setX((double) cLoc.get(i).get(2));
+			loc.setY((double) cLoc.get(i).get(3));
+			loc.setZ((double) cLoc.get(i).get(4));
+			
+			Block lChest = loc.getBlock();
+			Chunk chunk = world.getChunkAt(loc);
+			if(!chunk.isLoaded()){
+				world.loadChunk(chunk);
 			}
-		}else if(!waitRef){
-			return;
+			if(lChest.getType().CHEST != null){
+				org.bukkit.block.Chest chest = (org.bukkit.block.Chest) lChest.getState();
+				inv = chest.getBlockInventory();
+				ItemStack[] stacks = getLoot(cLoc.get(i).get(1).toString());
+				inv.setContents(stacks);
+			}
 		}
-		waitRef = false;
 	}
 	
 	public ItemStack[] getLoot(String chest){
+		this.reloadConfig();
 		ArrayList<?> stack = (ArrayList<?>) this.getConfig().getList("chests." + chest);
 		ItemStack[] stacks = stack.toArray(new ItemStack[stack.size()]);
 		return stacks;

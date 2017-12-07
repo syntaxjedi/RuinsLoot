@@ -1,8 +1,11 @@
 package net.syntaxjedi.ruinsloot;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -44,21 +47,25 @@ public class BlockEvent implements Listener{
 	
 	@EventHandler
 	public void onBlockBreakEvent(BlockBreakEvent e) throws IOException{
-		Location position;
 		Player p = (Player)e.getPlayer();
-		if(p.hasPermission("ruinsloot.chest") && e.getBlock().getType() == Material.CHEST){
-			// REPLACE IMMEDIATELY - CHECKING IF BLOCK LOCATION == BLOCK LOCATION - ALWAYS RETURNS TRUE
-			String type = FileHandler.getLoc(e.getBlock().getX(), e.getBlock().getY(), e.getBlock().getZ(), e.getBlock().getWorld().getName());
-			if(type.equals("common") || type.equals("uncommon") || type.equals("legendary")){
-				e.setCancelled(true);
-				FileHandler.removeLoc(e.getBlock().getX(), e.getBlock().getY(), e.getBlock().getZ(), e.getBlock().getWorld().getName());
-				e.getBlock().getDrops().clear();
-				e.getBlock().setType(Material.AIR);
-				p.sendMessage("Broke The Chest!");
+		Location loc = new Location(p.getWorld(), 0, 0, 0);
+		if(e.getBlock().getType() == Material.CHEST){
+			Map<Integer, ArrayList<Object>> cLoc = FileHandler.getLoc();
+			for(int i = 0; i < cLoc.size(); i++){
+				loc.setX((double) cLoc.get(i).get(2));
+				loc.setY((double) cLoc.get(i).get(3));
+				loc.setZ((double) cLoc.get(i).get(4));
+				if(p.hasPermission("ruinsloot.chest") && e.getBlock().getLocation().equals(loc)){
+					e.setCancelled(true);
+					FileHandler.removeLoc(e.getBlock().getX(), e.getBlock().getY(), e.getBlock().getZ(), e.getBlock().getWorld().getName());
+					e.getBlock().getDrops().clear();
+					e.getBlock().setType(Material.AIR);
+					p.sendMessage("Broke The Chest!");
+				}else if(!p.hasPermission("ruinsloot.chest") && e.getBlock().getLocation().equals(loc)){
+					e.setCancelled(true);
+					p.sendMessage(ChatColor.RED + "You don't have permission to do that!");
+				}
 			}
-		}else if(!p.hasPermission("ruinsloot.chest")){
-				e.setCancelled(true);
-			}
+		}
 	}
-	
 }

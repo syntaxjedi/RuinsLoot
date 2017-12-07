@@ -14,6 +14,8 @@ import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -24,7 +26,15 @@ public class FileHandler {
 	private static final Logger log = Logger.getLogger("Minecraft");
 	
 	public static void createFile(){
-		File loc = new File("./plugins/ruinsloot/locations.loc");
+		File cPath = new File("./plugins/ruinsLootXL/");
+		File loc = new File(cPath, "locations.loc");
+		if(!cPath.exists()){
+			try{
+				cPath.mkdirs();
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+		}
 		if(!loc.exists()){
 			try {
 				loc.createNewFile();
@@ -35,9 +45,8 @@ public class FileHandler {
 	}
 	
 	public static void addLoc(int x, int y, int z, String type, String world){
-		log.info("FileHandler!");
 		try{
-			File locDir = new File("./plugins/ruinsloot/");
+			File locDir = new File("./plugins/ruinslootXL/");
 			if(!locDir.exists()){
 				locDir.mkdir();
 			}
@@ -60,8 +69,8 @@ public class FileHandler {
 	}
 	
 	public static void removeLoc(int x, int y, int z, String world) throws IOException{
-		File locFile = new File("./plugins/ruinsloot/locations.loc");
-		File temp = new File("./plugins/ruinsloot/temp.loc");
+		File locFile = new File("./plugins/ruinslootXL/locations.loc");
+		File temp = new File("./plugins/ruinslootXL/temp.loc");
 		
 		BufferedReader br = new BufferedReader(new FileReader(locFile));
 		BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
@@ -84,32 +93,44 @@ public class FileHandler {
 		br.close();
 		System.gc();
 		locFile.delete();
-		boolean successful = temp.renameTo(new File("./plugins/ruinsloot/locations.loc"));
+		boolean successful = temp.renameTo(new File("./plugins/ruinslootXL/locations.loc"));
 	}
 	
-	public static String getLoc(int x, int y, int z, String world){
+	public static Map getLoc(){
+		int pos = 0;
+		Map<Object, Object> cLoc = new HashMap();
 		try{
-			File loc = new File("./plugins/ruinsloot/locations.loc");
+			File loc = new File("./plugins/ruinslootXL/locations.loc");
 			Scanner sc = new Scanner(loc);
 			
 			String s;
 			while(sc.hasNextLine()){
+				ArrayList<Object> locList = new ArrayList();
+				
 				String locLine = sc.nextLine();
 				String[] locParse = locLine.split(":");
-				int fx = Integer.parseInt(locParse[0]);
-				int fy = Integer.parseInt(locParse[1]);
-				int fz = Integer.parseInt(locParse[2]);
+				Double fx = Double.parseDouble(locParse[0]);
+				Double fy = Double.parseDouble(locParse[1]);
+				Double fz = Double.parseDouble(locParse[2]);
 				String type = locParse[3];
 				String fWorld = locParse[4];
-				if(fx == x && fy == y && fz == z && fWorld.equals(world)){
+				locList.add(fWorld);
+				locList.add(type);
+				locList.add(fx);
+				locList.add(fy);
+				locList.add(fz);
+				cLoc.put(pos, locList);
+				pos++;
+				//locList.clear();
+				/*if(fx == x && fy == y && fz == z && fWorld.equals(world)){
 					return type;
-				}
+				}*/
 			}
 			sc.close();
-		}catch (FileNotFoundException e){
+		}catch (Exception e){
 			e.printStackTrace();
 		}
-		return "";
+		return cLoc;
 	}
 	
 }
